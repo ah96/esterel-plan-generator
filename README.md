@@ -108,7 +108,7 @@ esterel-plan-generator/
 
 ```bash
 # Make bundled planners executable
-chmod +x planners/popf planners/lpg-td
+chmod +x planners/popf planners/lpg-td planners/optic
 
 # Run on a single pair — POPF planner, 10-second timeout
 python3 esterel_plan_generator.py \
