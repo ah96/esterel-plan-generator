@@ -457,7 +457,11 @@ def parse_plan_text(planner_output: str,
 
             open_b = line.index('[', close_p) + 1
             close_b = line.index(']', open_b)
-            duration = float(line[open_b:close_b].strip())
+            bracket = line[open_b:close_b].strip()
+            # LPG-td format: "D:180.00; C:0.10" — extract value after "D:"
+            if bracket.upper().startswith('D:'):
+                bracket = bracket[2:].split(';')[0].strip()
+            duration = float(bracket)
 
         except (ValueError, IndexError):
             continue
@@ -805,9 +809,9 @@ def run_planner(domain_path: str,
     i = 0
     while i < len(lines):
         line = lines[i]
-        if '; Plan found' in line or ';;;; Solution Found' in line:
+        if '; Plan found' in line or ';;;; Solution Found' in line or 'solution found' in line.lower():
             solved = True
-        if '; Time' in line:
+        if '; Time' in line or 'Plan computed:' in line:
             j = i + 1
             block: List[str] = []
             while j < len(lines) and len(lines[j].strip()) >= 2:
