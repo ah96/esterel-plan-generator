@@ -66,8 +66,7 @@ PLAN_START ──[CONDITION, 0.001, ∞]──► LOAD_START ──[START_END_AC
 
 ### Relationship to ROSPlan
 
-ROSPlan's C++ class `PDDLEsterelPlanParser` builds this graph from three ROS Knowledge Base services. This toolkit reproduces the same algorithm in pure Python, producing byte-compatible output with no ROS dependency. The implementation has been validated against ROSPlan's output on **23 benchmark instances** across five IPC domains (Depots, Driverlog, Rovers, Satellite, Zenotravel) — graphs are topologically identical for identical input plans.
-
+ROSPlan's C++ class `PDDLEsterelPlanParser` builds this graph from three ROS Knowledge Base services. This toolkit reproduces the same algorithm in pure Python, producing byte-compatible output with no ROS dependency.
 ---
 
 ## Repository Structure
