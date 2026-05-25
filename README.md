@@ -155,7 +155,7 @@ All three planners are pre-built static binaries for **Linux x86_64**. No instal
 planners/popf -n DOMAIN PROBLEM
 ```
 
-A forward-chaining temporal planner that supports full PDDL 2.1 durative actions. Produces an anytime sequence of improving plans; the final plan before timeout is used. Source and documentation: [Planning-Wiki/popf]([https://github.com/KCL-Planning/popf](https://planning.wiki/ref/planners/popf)).
+A forward-chaining temporal planner that supports full PDDL 2.1 durative actions. Produces an anytime sequence of improving plans; the final plan before timeout is used. Source and documentation: [Planning-Wiki/popf]([[https://github.com/KCL-Planning/popf](https://planning.wiki/ref/planners/popf)](https://planning.wiki/ref/planners/popf)).
 
 | Flag | Effect |
 |---|---|
