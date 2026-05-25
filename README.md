@@ -11,19 +11,62 @@ Two tools are provided:
 
 ---
 
-## Background
+## What is an Esterel Plan?
 
-ROSPlan represents plans as **Esterel graphs**: directed graphs in which nodes are plan-start, action-start, and action-end events, and edges encode temporal and causal relationships. Three edge types exist:
+A temporal planner produces a flat list of actions with start times and durations — a schedule. That schedule answers *what* to do and *when*, but it says nothing about *why* one action must come before another, or *which* actions can safely overlap.
 
-| Edge type | Meaning |
+An **Esterel plan graph** makes those relationships explicit. It is a directed graph built on top of the raw schedule in which:
+
+- Every action is split into two **nodes**: an `ACTION_START` event and an `ACTION_END` event. A special `PLAN_START` node acts as the root of the graph.
+- Every dependency between events becomes a labelled **edge** carrying a time interval `[lower_bound, upper_bound]` — the minimum and maximum number of seconds that must elapse between the source event and the sink event.
+
+The name comes from the **Esterel synchronous programming language**, which uses a similar reactive-event graph model. ROSPlan adopted this representation so that a robot executive can treat plan execution as a reactive system: it fires events as their guard conditions become true, monitors whether timing constraints are still satisfied, and re-plans when they are not.
+
+### Node types
+
+| Type | Integer | Description |
+|---|---|---|
+| `ACTION_START` | `0` | The moment an action begins executing |
+| `ACTION_END` | `1` | The moment an action finishes |
+| `PLAN_START` | `2` | Synthetic root node at time zero; source of edges for actions whose preconditions are met in the initial state |
+
+### Edge types
+
+| Type | Integer | Meaning |
+|---|---|---|
+| `CONDITION` | `0` | Causal dependency: the sink event requires a fact that the source event establishes (or that holds from the initial state / a Timed Initial Literal) |
+| `START_END_ACTION` | `1` | Fixed-duration link from `ACTION_START` to `ACTION_END` of the same action; `lower = upper = duration` |
+| `INTERFERENCE` | `2` | Mutual-exclusion ordering: the source event must complete before the sink event begins because their effects or conditions would conflict |
+
+### A small example
+
+Consider a plan with two sequential actions — `load` (duration 3 s) followed by `drive` (duration 10 s) — where `drive` requires the truck to be loaded:
+
+```
+PLAN_START ──[CONDITION, 0.001, ∞]──► LOAD_START ──[START_END_ACTION, 3, 3]──► LOAD_END
+                                                                                     │
+                                                                    [CONDITION, 0.001, ∞]
+                                                                                     │
+                                                                                     ▼
+                                                                              DRIVE_START ──[START_END_ACTION, 10, 10]──► DRIVE_END
+```
+
+- The `CONDITION` edge from `PLAN_START` to `LOAD_START` says the truck and cargo satisfy the initial preconditions.
+- The `START_END_ACTION` edge encodes the 3-second duration of `load`.
+- The `CONDITION` edge from `LOAD_END` to `DRIVE_START` captures the causal link: `drive` needs the truck to be loaded, and `LOAD_END` is the event that establishes that fact.
+
+### Why use this representation?
+
+| Use case | Benefit |
 |---|---|
-| `CONDITION` | Causal ordering: node B waits for node A because A produces a precondition B requires |
-| `START_END_ACTION` | Fixed-duration constraint between an action's start and end nodes |
-| `INTERFERENCE` | Ordering constraint arising from effect/condition conflicts between concurrent actions |
+| **Robot execution** | An executive can dispatch actions as soon as their incoming edges are satisfied, enabling maximum parallelism while respecting all constraints |
+| **Replanning** | When an action fails or is delayed, the graph makes it immediately clear which downstream events are affected |
+| **Verification** | Timing bounds on edges allow formal checking of whether a partially-executed plan can still meet its deadlines |
+| **Visualisation** | The graph gives a human-readable view of causal and temporal structure that a flat schedule cannot |
 
-The C++ implementation inside ROSPlan requires a running ROS stack and three Knowledge Base services. This toolkit replaces those services with a pure-Python PDDL parser, making the pipeline usable in any environment.
+### Relationship to ROSPlan
 
-Verified against ROSPlan's output on 23 benchmark instances across five IPC domains — graphs are topologically identical for identical input plans.
+ROSPlan's C++ class `PDDLEsterelPlanParser` builds this graph from three ROS Knowledge Base services. This toolkit reproduces the same algorithm in pure Python, producing byte-compatible output with no ROS dependency. The implementation has been validated against ROSPlan's output on **23 benchmark instances** across five IPC domains (Depots, Driverlog, Rovers, Satellite, Zenotravel) — graphs are topologically identical for identical input plans.
 
 ---
 
@@ -35,6 +78,7 @@ esterel-plan-generator/
 ├── batch_esterel.py            # Batch runner with parallel execution and JSON output
 ├── planners/
 │   ├── popf                    # POPF — Partial Order Planning Forward (Linux x86_64)
+│   ├── optic-clp               # OPTIC-CLP — Optimising Preferences and TDCs (Linux x86_64)
 │   └── lpg-td                  # LPG-td 1.4 — Local Search Temporal Planner (Linux x86_64)
 └── examples/
     ├── depots/
