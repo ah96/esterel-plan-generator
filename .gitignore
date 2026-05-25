@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+
+# Generated results
+results/
+/tmp/
+
+# Planner scratch files
+plan.pddl
+*.pddl.bak
+
+# Editor / OS
+.vscode/
+.idea/
+*.swp
+*~
+.DS_Store
