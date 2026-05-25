@@ -64,9 +64,6 @@ PLAN_START ──[CONDITION, 0.001, ∞]──► LOAD_START ──[START_END_AC
 | **Verification** | Timing bounds on edges allow formal checking of whether a partially-executed plan can still meet its deadlines |
 | **Visualisation** | The graph gives a human-readable view of causal and temporal structure that a flat schedule cannot |
 
-### Relationship to ROSPlan
-
-ROSPlan's C++ class `PDDLEsterelPlanParser` builds this graph from three ROS Knowledge Base services. This toolkit reproduces the same algorithm in pure Python, producing byte-compatible output with no ROS dependency.
 ---
 
 ## Repository Structure
