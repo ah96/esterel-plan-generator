@@ -475,6 +475,6 @@ with open("esterel_plan.yaml", "w") as fh:
 ## Acknowledgements
 
 - Graph construction algorithm is a Python translation of `KCL_rosplan::PDDLEsterelPlanParser::createGraph()` from [ROSPlan](https://github.com/KCL-Planning/ROSPlan).
-- POPF is developed by the [KCL Planning Group]([https://github.com/KCL-Planning/popf](https://kclpure.kcl.ac.uk/portal/en/organisations/planning/)).
+- POPF is developed by the [KCL Planning Group](https://kclpure.kcl.ac.uk/portal/en/organisations/planning/).
 - LPG-td is developed at the [University of Brescia](https://lpg.unibs.it/lpg/).
 - Benchmark domains are from the [International Planning Competition (IPC)](https://ipc.icaps-conference.org/) problem sets.
